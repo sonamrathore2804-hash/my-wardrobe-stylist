@@ -574,14 +574,26 @@ Rules: only use items listed. Make outfits distinct. Each needs at least a top o
   let outfits;
   try {
     const res = await fetch(`${FASHN_PROXY}/anthropic/v1/messages`, {
-      method:'POST', headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key': anthropicKey},
-      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'anthropic-version':'2023-06-01',
+        'x-api-key': anthropicKey
+      },
+      body: JSON.stringify({
+        model:'claude-3-5-haiku-20241022',
+        max_tokens:1000,
+        messages:[{role:'user',content:prompt}]
+      })
     });
     const d = await res.json();
+    console.log('Anthropic response:', JSON.stringify(d));
+    if (!res.ok) throw new Error(`API error ${res.status}: ${JSON.stringify(d)}`);
     const raw = (d.content||[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
     outfits = JSON.parse(raw).outfits;
   } catch(e) {
-    document.getElementById('suggestionsArea').innerHTML = `<div class="warn-msg">Couldn't generate suggestions. Please try again.</div>`;
+    console.error('Generation error:', e);
+    document.getElementById('suggestionsArea').innerHTML = `<div class="warn-msg">Error: ${e.message}</div>`;
     btn.disabled = false; return;
   }
 
