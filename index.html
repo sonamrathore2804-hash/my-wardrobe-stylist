@@ -290,6 +290,16 @@ input[type="file"] { display: none; }
       </div>
       <p id="keyStatus" style="font-size:12px;margin-top:8px;color:var(--text3)"></p>
     </div>
+
+    <div class="settings-box" style="margin-top:1rem">
+      <label>Anthropic API Key</label>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">Get your free key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--gold)">console.anthropic.com</a> → API Keys. Used for outfit suggestions.</p>
+      <div class="api-key-row">
+        <input type="password" id="anthropicKeyInput" placeholder="sk-ant-xxxxxxxxxxxxxxxx" />
+        <button class="btn-gold" onclick="saveAnthropicKey()">Save</button>
+      </div>
+      <p id="anthropicKeyStatus" style="font-size:12px;margin-top:8px;color:var(--text3)"></p>
+    </div>
   </div>
 
 </main>
@@ -324,6 +334,7 @@ const CATS = [
 let store = Object.fromEntries(CATS.map(c => [c.key, []]));
 let modelPhotos = [];
 let fashnKey = '';
+let anthropicKey = '';
 let pending = null;
 
 // ── STORAGE ──
@@ -335,6 +346,8 @@ function loadAll() {
     if (mp) modelPhotos = JSON.parse(mp);
     const k = localStorage.getItem('fashn_key');
     if (k) { fashnKey = k; document.getElementById('fashnKeyInput').value = k; document.getElementById('keyStatus').textContent = '✓ API key saved'; }
+    const ak = localStorage.getItem('anthropic_key');
+    if (ak) { anthropicKey = ak; document.getElementById('anthropicKeyInput').value = ak; document.getElementById('anthropicKeyStatus').textContent = '✓ Anthropic key saved'; }
   } catch(e) {}
   renderWardrobe(); renderModelPhotos();
 }
@@ -345,6 +358,12 @@ function saveApiKey() {
   if (!fashnKey) return;
   localStorage.setItem('fashn_key', fashnKey);
   document.getElementById('keyStatus').textContent = '✓ API key saved';
+}
+function saveAnthropicKey() {
+  anthropicKey = document.getElementById('anthropicKeyInput').value.trim();
+  if (!anthropicKey) return;
+  localStorage.setItem('anthropic_key', anthropicKey);
+  document.getElementById('anthropicKeyStatus').textContent = '✓ Anthropic key saved';
 }
 function saveWardrobe() {
   const blob = new Blob([JSON.stringify({store, modelPhotos}, null, 2)], {type:'application/json'});
@@ -532,6 +551,9 @@ async function generateOutfits() {
   if (!store.tops.length && !store.bottoms.length) {
     document.getElementById('suggestionsArea').innerHTML = `<div class="warn-msg">Add at least some tops and bottoms in the Wardrobe tab first.</div>`; return;
   }
+  if (!anthropicKey) {
+    document.getElementById('suggestionsArea').innerHTML = `<div class="warn-msg">Please add your Anthropic API key in the <a onclick="switchTabByName('settings')" style="color:var(--gold);cursor:pointer;text-decoration:underline">Settings tab</a> first.</div>`; return;
+  }
   const btn = document.getElementById('styleBtn');
   btn.disabled = true;
   document.getElementById('suggestionsArea').innerHTML = `<div class="loading-state"><div class="spinner"></div><p class="loading-txt">Picking your outfits…</p></div>`;
@@ -552,7 +574,7 @@ Rules: only use items listed. Make outfits distinct. Each needs at least a top o
   let outfits;
   try {
     const res = await fetch(`${FASHN_PROXY}/anthropic/v1/messages`, {
-      method:'POST', headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01'},
+      method:'POST', headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','x-api-key': anthropicKey},
       body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
     });
     const d = await res.json();
