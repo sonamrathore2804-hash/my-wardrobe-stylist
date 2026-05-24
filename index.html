@@ -562,19 +562,15 @@ Rules: only use items listed. Make outfits distinct. Each needs at least a top o
 
   let outfits;
   try {
-    const res = await fetch(`${FASHN_PROXY}/anthropic/v1/messages`, {
+    const res = await fetch(`${FASHN_PROXY}/gemini`, {
       method:'POST',
       headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        model:'claude-haiku-4-5-20251001',
-        max_tokens:1000,
-        messages:[{role:'user',content:prompt}]
-      })
+      body: JSON.stringify({ prompt })
     });
     const d = await res.json();
-    console.log('Anthropic response:', JSON.stringify(d));
+    console.log('Gemini response:', JSON.stringify(d));
     if (!res.ok) throw new Error(`API error ${res.status}: ${JSON.stringify(d)}`);
-    const raw = (d.content||[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    const raw = (d.text||'').replace(/```json|```/g,'').trim();
     outfits = JSON.parse(raw).outfits;
   } catch(e) {
     console.error('Generation error:', e);
