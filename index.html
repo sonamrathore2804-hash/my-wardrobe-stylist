@@ -496,7 +496,7 @@ async function fashnTryOn(modelDataUrl, garmentDataUrl, category) {
     }
   };
 
-  const runRes = await fetch(`${FASHN_PROXY}/run`, {
+  const runRes = await fetch(`${FASHN_PROXY}/fashn/run`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${fashnKey}` },
     body: JSON.stringify(body)
@@ -514,7 +514,7 @@ async function fashnTryOn(modelDataUrl, garmentDataUrl, category) {
   // Poll status every 3 s, up to 3 minutes
   for (let i = 0; i < 60; i++) {
     await new Promise(r => setTimeout(r, 3000));
-    const statusRes = await fetch(`${FASHN_PROXY}/status/${predId}`, {
+    const statusRes = await fetch(`${FASHN_PROXY}/fashn/status/${predId}`, {
       headers: { 'Authorization': `Bearer ${fashnKey}` }
     });
     if (!statusRes.ok) continue;
@@ -551,8 +551,8 @@ Rules: only use items listed. Make outfits distinct. Each needs at least a top o
 
   let outfits;
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
+    const res = await fetch(`${FASHN_PROXY}/anthropic/v1/messages`, {
+      method:'POST', headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01'},
       body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
     });
     const d = await res.json();
