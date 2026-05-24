@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Wardrobe Stylist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f7f5f0; --surface: #ffffff; --surface2: #f0ede6;
+  --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.14);
+  --text: #1a1a18; --text2: #6b6b65; --text3: #a8a8a0;
+  --accent: #2d2d2a; --gold: #c8a96e; --gold-light: #f5edd8;
+  --radius: 14px; --radius-sm: 8px;
+}
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* HEADER */
+header {
+  background: var(--surface); border-bottom: 0.5px solid var(--border);
+  padding: 0 2rem; display: flex; align-items: center;
+  justify-content: space-between; height: 60px;
+  position: sticky; top: 0; z-index: 20;
+}
+.logo { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--text); }
+.logo em { font-style: italic; color: var(--gold); }
+.tab-bar { display: flex; gap: 2px; }
+.tab {
+  padding: 6px 16px; font-size: 13px; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; border: 0.5px solid transparent; border-radius: 20px;
+  background: none; color: var(--text2); transition: all 0.15s; letter-spacing: 0.01em;
+}
+.tab:hover { background: var(--surface2); color: var(--text); }
+.tab.active { background: var(--accent); color: #fff; }
+
+main { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+.section { display: none; } .section.active { display: block; }
+
+/* WARDROBE */
+.data-bar {
+  display: flex; gap: 8px; align-items: center; margin-bottom: 1.5rem;
+  padding: 10px 14px; background: var(--surface);
+  border-radius: var(--radius-sm); border: 0.5px solid var(--border);
+  font-size: 12px; color: var(--text2);
+}
+.data-bar span { flex: 1; }
+.data-bar button { font-size: 12px; font-family: 'DM Sans', sans-serif; padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: all 0.15s; }
+.btn-gold { background: var(--gold-light); color: #8a6832; border: 0.5px solid #e8d5a8; }
+.btn-gold:hover { background: #eeddb8; }
+.btn-ghost { background: none; border: 0.5px solid var(--border2); color: var(--text2); }
+.btn-ghost:hover { background: var(--surface2); }
+
+.category-block { margin-bottom: 2.5rem; }
+.cat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 0.5px solid var(--border); }
+.cat-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+.cat-title { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text2); }
+.cat-count { font-size: 11px; color: var(--text3); margin-left: auto; }
+.item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.item-card {
+  position: relative; border-radius: var(--radius); overflow: hidden;
+  background: var(--surface2); aspect-ratio: 3/4;
+  border: 0.5px solid var(--border); transition: transform 0.15s, box-shadow 0.15s;
+}
+.item-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.07); }
+.item-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.item-label { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.65)); color: #fff; font-size: 10px; padding: 20px 8px 7px; line-height: 1.3; }
+.del-btn { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; border-radius: 50%; background: rgba(0,0,0,0.5); color: #fff; border: none; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.15s; }
+.item-card:hover .del-btn { opacity: 1; }
+.add-card {
+  border: 1.5px dashed var(--border2); border-radius: var(--radius);
+  aspect-ratio: 3/4; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; color: var(--text3); font-size: 12px;
+  font-family: 'DM Sans', sans-serif; background: none; transition: all 0.15s;
+}
+.add-card:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-light); }
+
+/* MY PHOTOS SECTION */
+.my-photos-section {
+  background: var(--surface); border-radius: var(--radius);
+  border: 0.5px solid var(--border); padding: 1.25rem; margin-bottom: 2rem;
+}
+.my-photos-section h3 { font-family: 'Playfair Display', serif; font-size: 17px; margin-bottom: 4px; }
+.my-photos-section p { font-size: 12px; color: var(--text2); margin-bottom: 1rem; line-height: 1.5; }
+.model-photos-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+.model-photo-card {
+  position: relative; width: 110px; aspect-ratio: 2/3;
+  border-radius: var(--radius); overflow: hidden;
+  border: 0.5px solid var(--border); background: var(--surface2);
+}
+.model-photo-card img { width: 100%; height: 100%; object-fit: cover; }
+.model-photo-card .del-btn { opacity: 0; }
+.model-photo-card:hover .del-btn { opacity: 1; }
+.add-model-btn {
+  width: 110px; aspect-ratio: 2/3;
+  border: 1.5px dashed var(--border2); border-radius: var(--radius);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; cursor: pointer; color: var(--text3); font-size: 11px;
+  font-family: 'DM Sans', sans-serif; background: none; transition: all 0.15s;
+}
+.add-model-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-light); }
+
+/* SETTINGS BOX */
+.settings-box {
+  background: var(--surface); border-radius: var(--radius);
+  border: 0.5px solid var(--border); padding: 1rem 1.25rem; margin-bottom: 2rem;
+}
+.settings-box label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); display: block; margin-bottom: 6px; }
+.api-key-row { display: flex; gap: 8px; }
+.api-key-row input {
+  flex: 1; font-size: 13px; font-family: 'DM Sans', sans-serif;
+  padding: 8px 12px; border-radius: var(--radius-sm);
+  border: 0.5px solid var(--border2); background: var(--bg);
+  color: var(--text); outline: none;
+}
+.api-key-row input:focus { border-color: var(--gold); }
+.api-key-row button { padding: 8px 16px; font-size: 12px; border-radius: var(--radius-sm); }
+
+/* TODAY */
+.today-hero { background: var(--surface); border-radius: var(--radius); border: 0.5px solid var(--border); padding: 1.5rem; margin-bottom: 1.5rem; }
+.today-hero label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+.mood-row { display: flex; gap: 10px; align-items: flex-end; }
+.mood-row textarea {
+  flex: 1; font-size: 14px; font-family: 'DM Sans', sans-serif;
+  padding: 12px 14px; border-radius: var(--radius-sm);
+  border: 0.5px solid var(--border2); background: var(--bg); color: var(--text);
+  resize: none; height: 80px; line-height: 1.55; outline: none; transition: border-color 0.15s;
+}
+.mood-row textarea:focus { border-color: var(--gold); }
+.style-btn {
+  padding: 12px 22px; font-size: 14px; font-family: 'DM Sans', sans-serif;
+  font-weight: 500; border: none; border-radius: var(--radius-sm);
+  background: var(--accent); color: #fff; cursor: pointer; white-space: nowrap; transition: background 0.15s;
+}
+.style-btn:hover { background: #3d3d3a; }
+.style-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* SUGGESTIONS */
+.suggestions-wrap { display: flex; flex-direction: column; gap: 2rem; }
+
+.sug-card { background: var(--surface); border-radius: var(--radius); border: 0.5px solid var(--border); overflow: hidden; }
+.sug-header { padding: 1.1rem 1.25rem 0.8rem; display: flex; align-items: flex-start; gap: 12px; }
+.sug-num { width: 28px; height: 28px; border-radius: 50%; background: var(--gold-light); color: var(--gold); font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; border: 0.5px solid #e8d5a8; }
+.sug-info { flex: 1; }
+.sug-title { font-family: 'Playfair Display', serif; font-size: 17px; margin-bottom: 3px; }
+.sug-vibe { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+/* TRY-ON PANELS */
+.tryon-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 1.25rem;
+  margin-bottom: 1rem;
+}
+.tryon-panel { display: flex; flex-direction: column; gap: 8px; }
+.tryon-panel-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); padding: 0 2px; }
+
+.tryon-image-box {
+  border-radius: var(--radius); overflow: hidden;
+  background: var(--surface2); border: 0.5px solid var(--border);
+  aspect-ratio: 2/3; position: relative;
+}
+.tryon-image-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tryon-placeholder {
+  width: 100%; height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 8px;
+  color: var(--text3); font-size: 12px; text-align: center; padding: 1rem;
+}
+.tryon-placeholder svg { width: 32px; height: 32px; opacity: 0.3; }
+.tryon-generating {
+  width: 100%; height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+}
+.tryon-spinner { width: 24px; height: 24px; border: 2px solid var(--border2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+.tryon-gen-txt { font-size: 11px; color: var(--text2); text-align: center; line-height: 1.5; }
+
+/* MOODBOARD (garments) */
+.moodboard-strip { display: flex; gap: 6px; padding: 0 1.25rem; margin-bottom: 1rem; overflow-x: auto; }
+.mb-item { position: relative; width: 80px; flex-shrink: 0; aspect-ratio: 3/4; border-radius: 10px; overflow: hidden; background: var(--surface2); border: 0.5px solid var(--border); }
+.mb-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mb-badge { position: absolute; top: 4px; left: 4px; background: rgba(255,255,255,0.88); color: #1a1a18; font-size: 8px; font-weight: 500; padding: 2px 6px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.04em; }
+.mb-name { position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 6px 5px; background: linear-gradient(transparent, rgba(0,0,0,0.6)); color: #fff; font-size: 9px; line-height: 1.3; }
+
+.sug-footer { padding: 0.75rem 1.25rem 1.1rem; border-top: 0.5px solid var(--border); }
+.acc-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+.acc-chip { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: var(--gold-light); color: #8a6832; border: 0.5px solid #e8d5a8; }
+.styling-tip { font-size: 12px; color: var(--text2); line-height: 1.55; padding: 8px 12px; background: var(--bg); border-radius: var(--radius-sm); border-left: 2px solid var(--gold); }
+.tip-lbl { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 3px; }
+
+/* STATES */
+.empty-state { text-align: center; padding: 3.5rem 1rem; color: var(--text3); }
+.empty-state svg { width: 48px; height: 48px; opacity: 0.3; margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto; }
+.empty-state p { font-size: 14px; line-height: 1.7; }
+.empty-state strong { color: var(--text2); }
+
+.loading-state { text-align: center; padding: 3rem; }
+.spinner { display: inline-block; width: 28px; height: 28px; border: 2px solid var(--border2); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-txt { font-size: 13px; color: var(--text2); margin-top: 10px; font-style: italic; }
+.warn-msg { font-size: 13px; color: var(--text2); padding: 12px 16px; background: var(--surface); border-radius: var(--radius-sm); border: 0.5px solid var(--border2); margin-bottom: 1rem; }
+
+/* MODAL */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.modal-bg.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; width: 300px; transform: translateY(10px); transition: transform 0.2s; border: 0.5px solid var(--border2); }
+.modal-bg.open .modal { transform: translateY(0); }
+.modal h4 { font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 4px; }
+.modal p { font-size: 12px; color: var(--text2); margin-bottom: 1rem; }
+.modal input { width: 100%; font-size: 14px; font-family: 'DM Sans', sans-serif; padding: 9px 12px; border-radius: var(--radius-sm); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text); margin-bottom: 12px; outline: none; }
+.modal input:focus { border-color: var(--gold); }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.btn-cancel { padding: 7px 16px; font-size: 13px; font-family: 'DM Sans', sans-serif; border: 0.5px solid var(--border2); border-radius: 20px; background: none; color: var(--text2); cursor: pointer; }
+.btn-cancel:hover { background: var(--surface2); }
+.btn-confirm { padding: 7px 16px; font-size: 13px; font-family: 'DM Sans', sans-serif; border: none; border-radius: 20px; background: var(--accent); color: #fff; cursor: pointer; font-weight: 500; }
+.btn-confirm:hover { background: #3d3d3a; }
+
+/* no-model notice */
+.notice { font-size: 12px; color: var(--text2); padding: 8px 12px; background: var(--gold-light); border-radius: var(--radius-sm); border: 0.5px solid #e8d5a8; margin: 0 1.25rem 1rem; line-height: 1.5; }
+.notice a { color: var(--gold); text-decoration: underline; cursor: pointer; }
+
+input[type="file"] { display: none; }
+
+@media (max-width: 540px) {
+  header { padding: 0 1rem; }
+  main { padding: 1rem 1rem 3rem; }
+  .tryon-panels { grid-template-columns: 1fr; }
+  .item-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">My <em>Wardrobe</em></div>
+  <nav class="tab-bar">
+    <button class="tab active" onclick="switchTab('today', this)">Today's Look</button>
+    <button class="tab" onclick="switchTab('wardrobe', this)">Wardrobe</button>
+    <button class="tab" onclick="switchTab('settings', this)">Settings</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- TODAY -->
+  <div id="today" class="section active">
+    <div class="today-hero">
+      <label>How are you feeling today?</label>
+      <div class="mood-row">
+        <textarea id="moodInput" placeholder="e.g. confident and creative, client presentation day… or lazy Sunday, feeling earthy and calm…"></textarea>
+        <button class="style-btn" id="styleBtn" onclick="generateOutfits()">Style me →</button>
+      </div>
+    </div>
+    <div id="suggestionsArea">
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <p>Add your clothes in the <strong>Wardrobe</strong> tab and your photos in <strong>Settings</strong>,<br>then describe your mood to see virtual try-on outfit looks.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- WARDROBE -->
+  <div id="wardrobe" class="section">
+    <div class="data-bar">
+      <span>💾 Save your wardrobe to a file and reload anytime</span>
+      <button class="btn-gold" onclick="saveWardrobe()">Export</button>
+      <button class="btn-ghost" onclick="document.getElementById('loadFile').click()">Import</button>
+    </div>
+    <div id="wardrobeContent"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settings" class="section">
+
+    <div class="my-photos-section">
+      <h3>My Photos</h3>
+      <p>Upload 1–4 photos of yourself (full body, clear background works best for try-on). These are the "model" photos Fashn will dress in your clothes.</p>
+      <div class="model-photos-grid" id="modelPhotosGrid"></div>
+    </div>
+
+    <div class="settings-box">
+      <label>Fashn API Key</label>
+      <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">Get your key at <a href="https://fashn.ai" target="_blank" style="color:var(--gold)">fashn.ai</a>. Stored locally in your browser — never sent anywhere except Fashn's servers.</p>
+      <div class="api-key-row">
+        <input type="password" id="fashnKeyInput" placeholder="fa-xxxxxxxxxxxxxxxxxxxxxxxx" />
+        <button class="btn-gold" onclick="saveApiKey()">Save</button>
+      </div>
+      <p id="keyStatus" style="font-size:12px;margin-top:8px;color:var(--text3)"></p>
+    </div>
+  </div>
+
+</main>
+
+<!-- Name Modal -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <h4>Name this piece</h4>
+    <p id="modalHint">Give it a short descriptive name</p>
+    <input type="text" id="nameInput" placeholder="e.g. white linen shirt" maxlength="60" />
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="cancelUpload()">Cancel</button>
+      <button class="btn-confirm" onclick="confirmUpload()">Save</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" onchange="handleFile(event)" />
+<input type="file" id="modelFileInput" accept="image/*" onchange="handleModelFile(event)" />
+<input type="file" id="loadFile" accept=".json" onchange="loadWardrobe(event)" />
+
+<script>
+const CATS = [
+  { key: 'tops',      label: 'Tops',             hint: 'top',            fashnCat: 'tops' },
+  { key: 'bottoms',   label: 'Bottoms',           hint: 'bottom',         fashnCat: 'bottoms' },
+  { key: 'footwear',  label: 'Footwear',          hint: 'footwear',       fashnCat: 'auto' },
+  { key: 'jewellery', label: 'Jewellery',         hint: 'jewellery piece',fashnCat: null },
+  { key: 'bags',      label: 'Bags & Clutches',   hint: 'bag',            fashnCat: null },
+  { key: 'others',    label: 'Other Accessories', hint: 'accessory',      fashnCat: null },
+];
+
+let store = Object.fromEntries(CATS.map(c => [c.key, []]));
+let modelPhotos = [];
+let fashnKey = '';
+let pending = null;
+
+// ── STORAGE ──
+function loadAll() {
+  try {
+    const s = localStorage.getItem('mywardrobe_v3');
+    if (s) { const p = JSON.parse(s); CATS.forEach(c => { if (p[c.key]) store[c.key] = p[c.key]; }); }
+    const mp = localStorage.getItem('mywardrobe_models');
+    if (mp) modelPhotos = JSON.parse(mp);
+    const k = localStorage.getItem('fashn_key');
+    if (k) { fashnKey = k; document.getElementById('fashnKeyInput').value = k; document.getElementById('keyStatus').textContent = '✓ API key saved'; }
+  } catch(e) {}
+  renderWardrobe(); renderModelPhotos();
+}
+function saveStore() { try { localStorage.setItem('mywardrobe_v3', JSON.stringify(store)); } catch(e) {} }
+function saveModels() { try { localStorage.setItem('mywardrobe_models', JSON.stringify(modelPhotos)); } catch(e) {} }
+function saveApiKey() {
+  fashnKey = document.getElementById('fashnKeyInput').value.trim();
+  if (!fashnKey) return;
+  localStorage.setItem('fashn_key', fashnKey);
+  document.getElementById('keyStatus').textContent = '✓ API key saved';
+}
+function saveWardrobe() {
+  const blob = new Blob([JSON.stringify({store, modelPhotos}, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'my-wardrobe.json'; a.click();
+}
+function loadWardrobe(e) {
+  const file = e.target.files[0]; if (!file) return; e.target.value = '';
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if (d.store) CATS.forEach(c => { if (Array.isArray(d.store[c.key])) store[c.key] = d.store[c.key]; });
+      if (d.modelPhotos) modelPhotos = d.modelPhotos;
+      saveStore(); saveModels(); renderWardrobe(); renderModelPhotos();
+      alert('Wardrobe loaded successfully!');
+    } catch(e) { alert('Could not read file.'); }
+  };
+  r.readAsText(file);
+}
+
+// ── TABS ──
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  btn.classList.add('active'); document.getElementById(id).classList.add('active');
+}
+
+// ── WARDROBE RENDER ──
+function renderWardrobe() {
+  document.getElementById('wardrobeContent').innerHTML = CATS.map(cat => `
+    <div class="category-block">
+      <div class="cat-header">
+        <div class="cat-dot"></div>
+        <span class="cat-title">${cat.label}</span>
+        <span class="cat-count">${store[cat.key].length} piece${store[cat.key].length !== 1 ? 's' : ''}</span>
+      </div>
+      <div class="item-grid">
+        ${store[cat.key].map((item, i) => `
+          <div class="item-card">
+            <img src="${item.url}" alt="${item.name}" loading="lazy" />
+            <div class="item-label">${item.name}</div>
+            <button class="del-btn" onclick="removeItem('${cat.key}',${i})">×</button>
+          </div>`).join('')}
+        <button class="add-card" onclick="startUpload('${cat.key}','${cat.hint}')">
+          <span style="font-size:22px">+</span><span>Add photo</span>
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+function renderModelPhotos() {
+  const grid = document.getElementById('modelPhotosGrid');
+  grid.innerHTML = modelPhotos.map((mp, i) => `
+    <div class="model-photo-card">
+      <img src="${mp.url}" alt="My photo ${i+1}" loading="lazy" />
+      <button class="del-btn" onclick="removeModelPhoto(${i})">×</button>
+    </div>`).join('');
+  if (modelPhotos.length < 4) {
+    grid.innerHTML += `<button class="add-model-btn" onclick="document.getElementById('modelFileInput').click()">
+      <span style="font-size:22px">+</span><span>Add my photo</span>
+    </button>`;
+  }
+}
+
+// ── UPLOAD ──
+function startUpload(cat, hint) { pending = {category: cat, hint}; document.getElementById('fileInput').click(); }
+
+function handleFile(e) {
+  const file = e.target.files[0]; if (!file) return; e.target.value = '';
+  toBase64(file, url => {
+    pending.dataUrl = url;
+    document.getElementById('modalHint').textContent = `Give this ${pending.hint} a short name`;
+    document.getElementById('nameInput').value = '';
+    document.getElementById('modalBg').classList.add('open');
+    setTimeout(() => document.getElementById('nameInput').focus(), 100);
+  });
+}
+
+function handleModelFile(e) {
+  const file = e.target.files[0]; if (!file) return; e.target.value = '';
+  toBase64(file, url => {
+    modelPhotos.push({url});
+    saveModels(); renderModelPhotos();
+  });
+}
+
+function toBase64(file, cb) {
+  const r = new FileReader(); r.onload = ev => cb(ev.target.result); r.readAsDataURL(file);
+}
+
+document.getElementById('nameInput').addEventListener('keydown', e => { if (e.key==='Enter') confirmUpload(); if (e.key==='Escape') cancelUpload(); });
+function confirmUpload() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) { document.getElementById('nameInput').focus(); return; }
+  store[pending.category].push({url: pending.dataUrl, name});
+  saveStore(); renderWardrobe();
+  document.getElementById('modalBg').classList.remove('open'); pending = null;
+}
+function cancelUpload() { document.getElementById('modalBg').classList.remove('open'); pending = null; }
+function removeItem(cat, idx) {
+  if (!confirm(`Remove "${store[cat][idx].name}"?`)) return;
+  store[cat].splice(idx, 1); saveStore(); renderWardrobe();
+}
+function removeModelPhoto(idx) {
+  if (!confirm('Remove this photo?')) return;
+  modelPhotos.splice(idx, 1); saveModels(); renderModelPhotos();
+}
+
+// ── FASHN API ──
+// Replace with your Cloudflare Worker URL after deploying worker.js
+// e.g. https://fashn-proxy.yourname.workers.dev
+const FASHN_PROXY = 'https://misty-sun-94b0fashion-proxy.sonamrathore2804.workers.dev';
+
+// Resize image to max dimension and return pure base64 (no prefix)
+function resizeAndStrip(dataUrl, maxPx = 1024) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      // toDataURL gives "data:image/jpeg;base64,XXXX" — strip the prefix
+      const full = canvas.toDataURL('image/jpeg', 0.88);
+      resolve(full.split(',')[1]);
+    };
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+}
+
+async function fashnTryOn(modelDataUrl, garmentDataUrl, category) {
+  if (!fashnKey) return null;
+
+  // Strip prefix + resize both images
+  const [modelB64, garmentB64] = await Promise.all([
+    resizeAndStrip(modelDataUrl, 1024),
+    resizeAndStrip(garmentDataUrl, 1024),
+  ]);
+
+  const body = {
+    model_name: 'tryon-v1.6',
+    inputs: {
+      model_image:   `data:image/jpeg;base64,${modelB64}`,
+      garment_image: `data:image/jpeg;base64,${garmentB64}`,
+      category: category || 'auto'
+    }
+  };
+
+  const runRes = await fetch(`${FASHN_PROXY}/run`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${fashnKey}` },
+    body: JSON.stringify(body)
+  });
+
+  if (!runRes.ok) {
+    const errText = await runRes.text();
+    throw new Error(`Fashn /run ${runRes.status}: ${errText}`);
+  }
+
+  const runData = await runRes.json();
+  if (!runData.id) throw new Error(`No prediction ID — ${JSON.stringify(runData)}`);
+  const predId = runData.id;
+
+  // Poll status every 3 s, up to 3 minutes
+  for (let i = 0; i < 60; i++) {
+    await new Promise(r => setTimeout(r, 3000));
+    const statusRes = await fetch(`${FASHN_PROXY}/status/${predId}`, {
+      headers: { 'Authorization': `Bearer ${fashnKey}` }
+    });
+    if (!statusRes.ok) continue;
+    const statusData = await statusRes.json();
+    if (statusData.status === 'completed') return statusData.output?.[0] || null;
+    if (statusData.status === 'failed') throw new Error(statusData.error || 'Generation failed');
+  }
+  throw new Error('Timed out after 3 min');
+}
+
+// ── AI SUGGESTIONS ──
+async function generateOutfits() {
+  const mood = document.getElementById('moodInput').value.trim();
+  if (!mood) { document.getElementById('moodInput').focus(); return; }
+  if (!store.tops.length && !store.bottoms.length) {
+    document.getElementById('suggestionsArea').innerHTML = `<div class="warn-msg">Add at least some tops and bottoms in the Wardrobe tab first.</div>`; return;
+  }
+  const btn = document.getElementById('styleBtn');
+  btn.disabled = true;
+  document.getElementById('suggestionsArea').innerHTML = `<div class="loading-state"><div class="spinner"></div><p class="loading-txt">Picking your outfits…</p></div>`;
+
+  const wardrobeDesc = CATS.map(c => `${c.label}: ${store[c.key].map(i=>i.name).join(', ')||'none'}`).join('\n');
+  const prompt = `You are a personal fashion stylist. Create 3 distinct outfit suggestions.
+
+Wardrobe:
+${wardrobeDesc}
+
+Mood: "${mood}"
+
+Return ONLY valid JSON, no markdown:
+{"outfits":[{"title":"3-4 word name","top":"exact name or null","bottom":"exact name or null","footwear":"exact name or null","jewellery":"exact name or null","bag":"exact name or null","other":"exact name or null","vibe":"one sentence why this fits the mood","styling_tip":"one specific visual tip"}]}
+
+Rules: only use items listed. Make outfits distinct. Each needs at least a top or bottom.`;
+
+  let outfits;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    });
+    const d = await res.json();
+    const raw = (d.content||[]).map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    outfits = JSON.parse(raw).outfits;
+  } catch(e) {
+    document.getElementById('suggestionsArea').innerHTML = `<div class="warn-msg">Couldn't generate suggestions. Please try again.</div>`;
+    btn.disabled = false; return;
+  }
+
+  // Render cards immediately with garment photos, then kick off try-on per card
+  renderSuggestionCards(outfits, mood);
+  btn.disabled = false;
+
+  // If Fashn key + model photos exist, generate try-on images for each card
+  if (fashnKey && modelPhotos.length > 0) {
+    outfits.forEach((outfit, idx) => generateTryOn(outfit, idx));
+  }
+}
+
+function findItem(category, name) {
+  if (!name) return null;
+  return store[category].find(i => i.name.toLowerCase() === name.toLowerCase()) || null;
+}
+
+function renderSuggestionCards(outfits, mood) {
+  const hasFashn = fashnKey && modelPhotos.length > 0;
+
+  const html = outfits.map((o, i) => {
+    const topItem    = findItem('tops', o.top);
+    const bottomItem = findItem('bottoms', o.bottom);
+    const footItem   = findItem('footwear', o.footwear);
+    const bagItem    = findItem('bags', o.bag);
+
+    const garmentStrip = [
+      topItem    ? {item: topItem,    badge:'Top'}      : null,
+      bottomItem ? {item: bottomItem, badge:'Bottom'}   : null,
+      footItem   ? {item: footItem,   badge:'Footwear'} : null,
+      bagItem    ? {item: bagItem,    badge:'Bag'}      : null,
+    ].filter(Boolean);
+
+    const accChips = [o.jewellery, o.other].filter(Boolean).map(a => `<span class="acc-chip">${a}</span>`).join('');
+
+    const noticeLine = !fashnKey
+      ? `<div class="notice">Add your <a onclick="switchTabByName('settings')">Fashn API key</a> to see virtual try-on images.</div>`
+      : !modelPhotos.length
+      ? `<div class="notice">Add your <a onclick="switchTabByName('settings')">model photos</a> to see virtual try-on images.</div>`
+      : '';
+
+    // Try-on panels: one per model photo (up to 2 shown)
+    const displayModels = modelPhotos.slice(0, 2);
+    const tryonPanels = hasFashn ? displayModels.map((mp, mi) => `
+      <div class="tryon-panel">
+        <div class="tryon-panel-label">Look ${mi+1}</div>
+        <div class="tryon-image-box" id="tryon-${i}-${mi}">
+          <div class="tryon-generating">
+            <div class="tryon-spinner"></div>
+            <div class="tryon-gen-txt">Generating<br>try-on…</div>
+          </div>
+        </div>
+      </div>`).join('') : '';
+
+    const tryonSection = hasFashn ? `<div class="tryon-panels" style="grid-template-columns:repeat(${displayModels.length},1fr)">${tryonPanels}</div>` : '';
+
+    return `
+    <div class="sug-card">
+      <div class="sug-header">
+        <div class="sug-num">${i+1}</div>
+        <div class="sug-info">
+          <div class="sug-title">${o.title}</div>
+          <div class="sug-vibe">${o.vibe}</div>
+        </div>
+      </div>
+      ${noticeLine}
+      ${tryonSection}
+      ${garmentStrip.length ? `<div class="moodboard-strip">${garmentStrip.map(g=>`
+        <div class="mb-item">
+          <img src="${g.item.url}" alt="${g.item.name}" loading="lazy" />
+          <div class="mb-badge">${g.badge}</div>
+          <div class="mb-name">${g.item.name}</div>
+        </div>`).join('')}</div>` : ''}
+      <div class="sug-footer">
+        ${accChips ? `<div class="acc-chips">${accChips}</div>` : ''}
+        <div class="styling-tip"><div class="tip-lbl">Styling tip</div>${o.styling_tip}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('suggestionsArea').innerHTML = `
+    <p style="font-size:12px;color:var(--text3);margin-bottom:1rem;font-style:italic">${outfits.length} looks for your "${mood}" mood</p>
+    <div class="suggestions-wrap">${html}</div>`;
+}
+
+async function generateTryOn(outfit, outfitIdx) {
+  const displayModels = modelPhotos.slice(0, 2);
+
+  const topItem    = findItem('tops', outfit.top);
+  const bottomItem = findItem('bottoms', outfit.bottom);
+
+  // Try top first; if no top, use bottom; Fashn handles category automatically
+  const garmentItem = topItem || bottomItem;
+  const fashnCat = topItem ? 'tops' : bottomItem ? 'bottoms' : 'auto';
+  if (!garmentItem) return;
+
+  // Run each model photo in parallel
+  await Promise.all(displayModels.map(async (mp, mi) => {
+    const boxId = `tryon-${outfitIdx}-${mi}`;
+    const box = document.getElementById(boxId);
+    if (!box) return;
+    try {
+      // mp.url is the full dataUrl from FileReader — pass as-is, resizeAndStrip handles it
+      const resultUrl = await fashnTryOn(mp.url, garmentItem.url, fashnCat);
+      if (resultUrl) {
+        box.innerHTML = `<img src="${resultUrl}" alt="Try-on look ${mi+1}" style="width:100%;height:100%;object-fit:cover;display:block" />`;
+      } else {
+        showTryOnError(box, 'No result returned');
+      }
+    } catch(err) {
+      console.error('Try-on error:', err);
+      showTryOnError(box, err.message);
+    }
+  }));
+}
+
+function showTryOnError(box, msg) {
+  box.innerHTML = `
+    <div class="tryon-placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="width:28px;height:28px;opacity:0.3">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span style="font-size:10px;color:#c0392b;text-align:center;line-height:1.4">${msg}</span>
+    </div>`;
+}
+
+function switchTabByName(name) {
+  const tabs = document.querySelectorAll('.tab');
+  const names = ['today','wardrobe','settings'];
+  const idx = names.indexOf(name);
+  if (idx >= 0) switchTab(name, tabs[idx]);
+}
+
+loadAll();
+</script>
+</body>
+</html>
